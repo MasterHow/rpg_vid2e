@@ -1,5 +1,8 @@
 1、按照ESIM要求的格式重新整理灰度图（按照自己的情况改路径和序列号）
 Reorganize_image.py
-2. 上采样
+2、上采样
 cd /upsampling/
 python upsample.py --input_dir=H:/KITTI_gray/data_odometry_gray/dataset/images --output_dir=H:/KITTI_gray/data_odometry_gray/dataset/imageFiles_Upsample
+python upsample.py --input_dir=H:/KITTI_gray/data_odometry_gray/dataset/images --output_dir=H:/KITTI_gray/data_odometry_gray/dataset/imageFiles_Upsample_1
+3、生成事件
+python .\esim_torch\scripts\generate_events.py --input_dir=H:/KITTI_gray/data_odometry_gray/dataset/imageFiles_Upsample --output_dir=H:/KITTI_gray/data_odometry_gray/dataset/events
