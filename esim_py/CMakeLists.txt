@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 3.3)
 project(esim_py)
 
+set(OpenCV_DIR D:/TOOLKITS/OpenCV/4.5.3/opencv/build)
+set(Boost_ADDITIONAL_VERSIONS "1.78" "1.78.0")
+set(BOOST_ROOT D:/TOOLKITS/BOOST/boost_1_78_0)
+set(Boost_FILESYSTEM_LIBRARY D:/TOOLKITS/BOOST/boost_1_78_0/stage/lib)
+
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+
 find_package(pybind11 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED NO_MODULE)

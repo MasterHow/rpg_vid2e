@@ -19,8 +19,18 @@ def get_flags():
 def main():
     flags = get_flags()
 
-    upsampler = Upsampler(input_dir=flags.input_dir, output_dir=flags.output_dir)
-    upsampler.upsample()
+    input_dir = flags.input_dir
+    output_dir = flags.output_dir
+    # count = 0
+    for Seq_list in os.listdir(input_dir):
+        # if count <= 4:
+        #     pass
+        # else:
+        Seqinpath = input_dir + '/' + Seq_list + '/'
+        Seqoutpath = output_dir + '/' + Seq_list + '/'
+        upsampler = Upsampler(input_dir=Seqinpath, output_dir=Seqoutpath)
+        upsampler.upsample()
+        # count += 1
 
 
 if __name__ == '__main__':
