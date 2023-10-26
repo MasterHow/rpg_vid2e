@@ -30,6 +30,56 @@ def merge_event(event_stamp, img_stamp, i, events_path):    # Merge event accord
     return event_x, event_y, event_t, event_p
 
 
+def merge_event_first(event_stamp, img_stamp, events_path):    # Merge event according to the current timestamp
+    start_stamp = img_stamp[0]
+    end_stamp = (img_stamp[0] + img_stamp[1]) / 2
+    indexes = np.array(np.where((event_stamp >= start_stamp) * (event_stamp <= end_stamp))).reshape(-1)
+    event = np.load((events_path + '/' + str(indexes[0]).zfill(10) + '.npz'), allow_pickle=True)
+    event_x = event[event.files[0]]
+    event_y = event[event.files[1]]
+    event_t = event[event.files[2]]
+    event_p = event[event.files[3]]
+    count = 0
+    for index in indexes:
+        if count > 0:
+            try:
+                event_index = np.load((events_path + '/' + str(index).zfill(10) + '.npz'), allow_pickle=True)
+                event_x = np.append(event_x, event_index[event_index.files[0]])
+                event_y = np.append(event_y, event_index[event_index.files[1]])
+                event_t = np.append(event_t, event_index[event_index.files[2]])
+                event_p = np.append(event_p, event_index[event_index.files[3]])
+            except:
+                print(('Fail in ' + events_path + '/' + str(index).zfill(10) + '.npz'))
+                pass
+        count += 1
+    return event_x, event_y, event_t, event_p
+
+
+def merge_event_last(event_stamp, img_stamp, events_path):    # Merge event according to the current timestamp
+    start_stamp = img_stamp[-2]
+    end_stamp = (img_stamp[-2] + img_stamp[-1]) / 2
+    indexes = np.array(np.where((event_stamp >= start_stamp) * (event_stamp <= end_stamp))).reshape(-1)
+    event = np.load((events_path + '/' + str(indexes[0]).zfill(10) + '.npz'), allow_pickle=True)
+    event_x = event[event.files[0]]
+    event_y = event[event.files[1]]
+    event_t = event[event.files[2]]
+    event_p = event[event.files[3]]
+    count = 0
+    for index in indexes:
+        if count > 0:
+            try:
+                event_index = np.load((events_path + '/' + str(index).zfill(10) + '.npz'), allow_pickle=True)
+                event_x = np.append(event_x, event_index[event_index.files[0]])
+                event_y = np.append(event_y, event_index[event_index.files[1]])
+                event_t = np.append(event_t, event_index[event_index.files[2]])
+                event_p = np.append(event_p, event_index[event_index.files[3]])
+            except:
+                print(('Fail in ' + events_path + '/' + str(index).zfill(10) + '.npz'))
+                pass
+        count += 1
+    return event_x, event_y, event_t, event_p
+
+
 if __name__ == '__main__':
 
     Dataset_dir = "I:/Dataset/Avgkitti/data_odometry_gray/dataset"
@@ -56,9 +106,24 @@ if __name__ == '__main__':
             text = f.readlines()
             event_stamp = np.array([line.strip("\n") for line in text], dtype=np.float)[0:-1]
             f.close()
+
+
+            # 生成第一帧和最后一帧
+            event_x, event_y, event_t, event_p = merge_event_first(event_stamp, img_stamp, event_path)
+            event = np.concatenate((event_x.reshape(-1, 1), event_y.reshape(-1, 1), event_t.reshape(-1, 1),
+                                    event_p.reshape(-1, 1)), axis=1)
+            np.save((output_path + '/' + str(0).zfill(6) + '.npy'), event)
+
+            event_x, event_y, event_t, event_p = merge_event_last(event_stamp, img_stamp, event_path)
+            event = np.concatenate((event_x.reshape(-1, 1), event_y.reshape(-1, 1), event_t.reshape(-1, 1),
+                                    event_p.reshape(-1, 1)), axis=1)
+            np.save((output_path + '/' + str(img_len-1).zfill(6) + '.npy'), event)
+
             for i in range(img_len - 2):        # Timestamps for each label in the sequence
                 event_x, event_y, event_t, event_p = merge_event(event_stamp, img_stamp, i, event_path)
                 event = np.concatenate((event_x.reshape(-1, 1), event_y.reshape(-1, 1), event_t.reshape(-1, 1),
                                         event_p.reshape(-1, 1)), axis=1)
                 np.save((output_path + '/' + str(i+1).zfill(6)+'.npy'), event)
+
+
         cnt += 1
