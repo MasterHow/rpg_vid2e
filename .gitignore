@@ -14,3 +14,4 @@ dataset/
 rosbag_dataset/
 *.ckpt
 .idea/
+/Operation_process.txt
