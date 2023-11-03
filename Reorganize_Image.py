@@ -7,15 +7,18 @@ from shutil import copy
 
 if __name__ == '__main__':
 
-    Dataset_dir = "H:/KITTI_gray/data_odometry_gray/dataset"
+    Dataset_dir = "/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset"
     input_dir = Dataset_dir + "/sequences"
-    output_dir = Dataset_dir + "/images"
+    # output_dir = Dataset_dir + "/images"
+    output_dir = Dataset_dir + "/images_reorganize_cuda1"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    files = os.listdir(input_dir)
-    files.sort(key=lambda x: int(x.split('.')[0]))
+    # files = os.listdir(input_dir)
+    # files.sort(key=lambda x: int(x.split('.')[0]))
     # cnt = 0       # 第几个序列（00，01，02……）
+    # files = ['08', '09', '10']      # 指定序列
+    files = ['00']  # 指定序列
     for Seq_list in files:
         # if cnt == 0:      # 指定调整的序列
         #     cnt += 1

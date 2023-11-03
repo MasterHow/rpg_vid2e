@@ -1,0 +1,128 @@
+#####################################################
+新建会话：tmux new -s SESSION-NAME
+杀死会话：tmux kill-session -t 0
+接入会话：tmux attach-session -t 0
+退出并杀死当前会话：ctrl+d
+
+# 远程连接tensorboard
+ssh -p 40216 -NL 8008:localhost:9009 root@ssh.atom.ks.supremind.info
+链接成功后会卡死，直接新开一个终端启动tb就好了
+
+# 打开tb
+tensorboard --logdir='./' --port=9009
+http://127.0.0.1:8008/
+
+# 上传数据
+双卡工作台
+scp -P 40612 E:\Dataset\Avgkitti\data_odometry_gray\dataset\events_final.zip root@ssh.atom.rk.supremind.info:/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/events_final
+单卡工作台
+scp -P 42169 E:\SSC_Dataset\SemanticKITTI\data_odometry_voxels_all.zip root@ssh.atom.rk.supremind.info:/workspace/mnt/storage/shihao/SSC-HR-PCD/SemanticKITTI_Voxels_All
+
+# 下载数据
+scp -P 40272 root@ssh.atom.ks.supremind.info:/workspace/mnt/storage/shihao/shihao-cephs/SSC_out/SCFormer_multi_b2_no-aug3D_com0-1.zip D:\
+scp -P 40216 root@ssh.atom.ks.supremind.info:/workspace/mnt/storage/shihao/shihao-cephs/SSC_out/SCFormer_multi_b2_l6_com0-1.zip D:\
+
+# SMMC
+上传数据：smmc cp -r src.zip ks/personal/shihao/
+查看数据：smmc ls ks/personal/shihao
+下载数据：smmc cp -r ks/personal/shihao/src.zip ./
+
+# 清除显卡进程
+安装fuser： apt-get install psmisc
+fuser -v /dev/nvidia* |awk '{for(i=1;i<=NF;i++)print "kill -9 " $i;}' | sh
+
+# 查看所有进程
+ps -aux
+
+# 查看服务器端口占用
+netstat -ap
+
+# SemanticKITTI SSC数据集分布
+训练集：01-10除了08，共3834帧点云; 不抽帧: 19130帧点云
+验证集：08，共815帧点云; 不抽帧: 4071帧点云
+测试集：11-21，3901帧点云; 不抽帧: 20351帧点云
+
+# SemanticPOSS SSC数据集分布
+训练集：01，03，04，05，共2488帧点云
+验证集：02，共500帧点云
+
+# 迭代删除
+rm -rf 路径
+
+# 对执行脚本赋予可读可写可执行权限
+sudo chmod 777 ×××
+
+# pip换源
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+
+# 查看磁盘空间
+df -h
+
+# vid2e环境配置
+镜像：reg.supremind.info/algorithmteam/supreimage/tools/smarttrafficintegrateddemo:pytorch1.9-trt7.2.2-ubuntu20.04-cuda11.2
+source /opt/conda/bin/activate
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+cd /workspace/mnt/storage/shihao/MyCode-02/rpg_vid2e
+pip install -r requirements.txt
+pip install pybind11 matplotlib
+python -m pip install ./esim_torch/
+
+CUDA_VISIBLE_DEVICES=0
+
+#####################################################
+# 上采样[序列 09 10]
+CUDA_VISIBLE_DEVICES=0 python upsample.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/images_reorganize_cuda0 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_cuda0_2
+
+# 上采样[cuda 1, 序列 08]
+CUDA_VISIBLE_DEVICES=1 python upsample.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/images_reorganize_cuda1 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_cuda1_2
+
+# 上采样[cuda 0, 序列 01]
+CUDA_VISIBLE_DEVICES=0 python upsample.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/images_reorganize_cuda0 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_cuda0_3
+
+# 上采样[cuda 1, 序列 03]
+CUDA_VISIBLE_DEVICES=1 python upsample.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/images_reorganize_cuda1 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_cuda1_3
+
+# 上采样[cuda 0, 序列 02]
+CUDA_VISIBLE_DEVICES=0 python upsample.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/images_reorganize_cuda0 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_cuda0_4
+
+# 生成事件[cuda 1, 序列 1,3,8,9,10]
+CUDA_VISIBLE_DEVICES=1 python ./esim_torch/scripts/generate_events.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_1-3-8-9-10 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/events
+
+# 上采样[cuda 1, 序列 00]
+CUDA_VISIBLE_DEVICES=1 python upsample.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/images_reorganize_cuda1 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_cuda1
+
+# 生成事件[cuda 0, 序列 02]
+CUDA_VISIBLE_DEVICES=0 python ./esim_torch/scripts/generate_events.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_cuda0_4 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/events
+
+# 生成时间戳[序列 02]
+python generate_timestamp.py
+
+# 合并事件[cuda 0, 序列 02]
+CUDA_VISIBLE_DEVICES=0 python merge_events.py
+
+# 生成事件[cuda 1, 序列 00]
+CUDA_VISIBLE_DEVICES=1 python ./esim_torch/scripts/generate_events.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_cuda1 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/events
+
+# 生成时间戳[序列 00]
+python generate_timestamp.py
+
+# 合并事件[tmux1, cuda 1, 序列 00]
+CUDA_VISIBLE_DEVICES=1 python merge_events.py

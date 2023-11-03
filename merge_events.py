@@ -9,7 +9,7 @@ from tqdm import tqdm
 def merge_event(event_stamp, img_stamp, i, events_path):    # Merge event according to the current timestamp
     start_stamp = (img_stamp[i] + img_stamp[i + 1]) / 2
     end_stamp = (img_stamp[i + 1] + img_stamp[i + 2]) / 2
-    indexes = np.array(np.where((event_stamp >= start_stamp) * (event_stamp <= end_stamp))).reshape(-1)
+    indexes = np.array(np.where((event_stamp > start_stamp) * (event_stamp <= end_stamp))).reshape(-1)
     event = np.load((events_path + '/' + str(indexes[0]).zfill(10) + '.npz'), allow_pickle=True)
     event_x = event[event.files[0]]
     event_y = event[event.files[1]]
@@ -34,7 +34,7 @@ def merge_event(event_stamp, img_stamp, i, events_path):    # Merge event accord
 def merge_event_first(event_stamp, img_stamp, events_path):    # Merge event according to the current timestamp
     start_stamp = img_stamp[0]
     end_stamp = (img_stamp[0] + img_stamp[1]) / 2
-    indexes = np.array(np.where((event_stamp >= start_stamp) * (event_stamp <= end_stamp))).reshape(-1)
+    indexes = np.array(np.where((event_stamp > start_stamp) * (event_stamp <= end_stamp))).reshape(-1)
     event = np.load((events_path + '/' + str(indexes[0]).zfill(10) + '.npz'), allow_pickle=True)
     event_x = event[event.files[0]]
     event_y = event[event.files[1]]
@@ -57,9 +57,9 @@ def merge_event_first(event_stamp, img_stamp, events_path):    # Merge event acc
 
 
 def merge_event_last(event_stamp, img_stamp, events_path):    # Merge event according to the current timestamp
-    start_stamp = img_stamp[-2]
-    end_stamp = (img_stamp[-2] + img_stamp[-1]) / 2
-    indexes = np.array(np.where((event_stamp >= start_stamp) * (event_stamp <= end_stamp))).reshape(-1)
+    start_stamp = (img_stamp[-2] + img_stamp[-1]) / 2
+    end_stamp = img_stamp[-1]
+    indexes = np.array(np.where((event_stamp > start_stamp) * (event_stamp <= end_stamp))).reshape(-1)
     event = np.load((events_path + '/' + str(indexes[0]).zfill(10) + '.npz'), allow_pickle=True)
     event_x = event[event.files[0]]
     event_y = event[event.files[1]]
@@ -83,10 +83,12 @@ def merge_event_last(event_stamp, img_stamp, events_path):    # Merge event acco
 
 if __name__ == '__main__':
 
-    Dataset_dir = "I:/Dataset/Avgkitti/data_odometry_gray/dataset"
-    # events_dir = Dataset_dir + "/events"
-    events_dir = "F:/Dataset/Avgkitti/data_odometry_gray/dataset" + "/events"
-    img_dir = Dataset_dir + "/images"
+    # Dataset_dir = "I:/Dataset/Avgkitti/data_odometry_gray/dataset"
+    Dataset_dir = "/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset"
+    events_dir = Dataset_dir + "/events"
+    # events_dir = "F:/Dataset/Avgkitti/data_odometry_gray/dataset" + "/events"
+    # img_dir = Dataset_dir + "/images"
+    img_dir = Dataset_dir + "/sequences"
     timestamp_dir = Dataset_dir + "/imageFiles_Upsample"
     output_dir = Dataset_dir + "/events_final"
 
@@ -103,8 +105,15 @@ if __name__ == '__main__':
             if not os.path.exists(output_path):
                 os.makedirs(output_path)
 
-            img_len = len(os.listdir((img_dir + '/' + event_list + '/imgs')))
+            # img_len = len(os.listdir((img_dir + '/' + event_list + '/imgs')))
+            # img_stamp = np.arange(0, img_len * (1 / fps), 1 / fps)
+            f = open((img_dir + '/' + event_list.split('_')[0] + '/times.txt'), "r")
+            text = f.readlines()
+            img_stamp_file = np.array([line.strip("\n") for line in text], dtype=np.float)
+            f.close()
+            img_len = len(img_stamp_file)
             img_stamp = np.arange(0, img_len * (1 / fps), 1 / fps)
+
             f = open((timestamp_dir + '/' + event_list + '/timestamps.txt'), "r")
             text = f.readlines()
             event_stamp = np.array([line.strip("\n") for line in text], dtype=np.float)[0:-1]

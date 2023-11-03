@@ -6,6 +6,8 @@ python upsample.py --input_dir=H:/KITTI_gray/data_odometry_gray/dataset/images -
 python upsample.py --input_dir=H:/KITTI_gray/data_odometry_gray/dataset/images --output_dir=H:/KITTI_gray/data_odometry_gray/dataset/imageFiles_Upsample_1
 3、生成事件
 python .\esim_torch\scripts\generate_events.py --input_dir=H:/KITTI_gray/data_odometry_gray/dataset/imageFiles_Upsample --output_dir=H:/KITTI_gray/data_odometry_gray/dataset/events
+3.5 重新生成事件时间戳（按照自己的情况改路径和序列号）
+generate_timestamp.py
 4.融合事件，对应图像
 merge_events.py
 可视化程序为show_events.py
