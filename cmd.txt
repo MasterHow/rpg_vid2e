@@ -126,3 +126,9 @@ python generate_timestamp.py
 
 # 合并事件[tmux1, cuda 1, 序列 00]
 CUDA_VISIBLE_DEVICES=1 python merge_events.py
+
+# 此前生成事件时裁剪了图像边界 重新生成，不裁剪而是resize; 同时改进vid2e，从静态时间戳改为动态时间戳
+上采样[cuda 0, 序列 00]
+CUDA_VISIBLE_DEVICES=1 python upsample.py \
+--input_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/images_reorganize_cuda1 \
+--output_dir=/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/imageFiles_Upsample_cuda1

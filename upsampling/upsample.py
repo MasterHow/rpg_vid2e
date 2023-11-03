@@ -22,7 +22,7 @@ def main():
     input_dir = flags.input_dir
     output_dir = flags.output_dir
     count = 0
-    for Seq_list in os.listdir(input_dir):
+    for Seq_list in sorted(os.listdir(input_dir)):
         if count <= 2:
             pass
         else:

@@ -32,7 +32,8 @@ def viz_events(events, resolution):
 
 if __name__ == '__main__':
 
-    Dataset_dir = "I:/Dataset/Avgkitti/data_odometry_gray/dataset"
+    # Dataset_dir = "I:/Dataset/Avgkitti/data_odometry_gray/dataset"
+    Dataset_dir = "/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset"
     events_dir = Dataset_dir + "/events_final"
     output_dir = Dataset_dir + "/events_show"
 

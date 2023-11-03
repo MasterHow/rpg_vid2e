@@ -53,6 +53,10 @@ def process_dir(outdir, indir, args):
         counter += 1
 
 
+def sorted_walk(input_dir):
+    for root, dirs, files in os.walk(input_dir):
+        yield root, sorted(dirs), sorted(files)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("""Generate events from a high frequency video stream""")
     parser.add_argument("--contrast_threshold_negative", "-cn", type=float, default=0.2)
@@ -65,7 +69,8 @@ if __name__ == "__main__":
 
     print(f"Generating events with cn={args.contrast_threshold_negative}, cp={args.contrast_threshold_positive} and rp={args.refractory_period_ns}")
 
-    for path, subdirs, files in os.walk(args.input_dir):
+    # for path, subdirs, files in sorted(os.walk(args.input_dir)):
+    for path, subdirs, files in sorted_walk(args.input_dir):
         if is_valid_dir(subdirs, files):
             output_folder = os.path.join(args.output_dir, os.path.relpath(path, args.input_dir))
 
