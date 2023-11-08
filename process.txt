@@ -10,4 +10,6 @@ python .\esim_torch\scripts\generate_events.py --input_dir=H:/KITTI_gray/data_od
 generate_timestamp.py
 4.融合事件，对应图像
 merge_events.py
+5.生成事件帧
+generate_event_frame.py
 可视化程序为show_events.py

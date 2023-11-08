@@ -23,14 +23,10 @@ def main():
     output_dir = flags.output_dir
     count = 0
     for Seq_list in sorted(os.listdir(input_dir)):
-        if count <= 2:
-            pass
-        else:
-            Seqinpath = input_dir + '/' + Seq_list + '/'
-            Seqoutpath = output_dir + '/' + Seq_list + '/'
-            upsampler = Upsampler(input_dir=Seqinpath, output_dir=Seqoutpath)
-            upsampler.upsample()
-        count += 1
+        Seqinpath = input_dir + '/' + Seq_list + '/'
+        Seqoutpath = output_dir + '/' + Seq_list + '/'
+        upsampler = Upsampler(input_dir=Seqinpath, output_dir=Seqoutpath)
+        upsampler.upsample()
 
 
 if __name__ == '__main__':
