@@ -4,6 +4,7 @@ import glob
 import random
 import argparse
 from tqdm import tqdm
+import numpy as np
 
 
 def overexpose_image(img_path):
@@ -12,8 +13,9 @@ def overexpose_image(img_path):
     """
     img = cv2.imread(img_path)
     # 随机生成亮度和对比度调整值
-    alpha = random.uniform(1.5, 2.0)  # 亮度控制在 1.5 到 2.0 之间
-    beta = random.randint(50, 100)    # 对比度控制在 50 到 100 之间
+    alpha = random.uniform(2.0, 4.0)  # 亮度控制在 2.0 到 4.0 之间, 对应曝光系数EV +1~+2
+    # beta = random.randint(50, 100)    # 对比度控制在 50 到 100 之间
+    beta = 0
     overexposed_img = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
     return overexposed_img
 
@@ -24,8 +26,10 @@ def underexpose_image(img_path):
     """
     img = cv2.imread(img_path)
     # 随机生成亮度和对比度调整值
-    alpha = random.uniform(0.5, 0.8)  # 亮度控制在 0.5 到 0.8 之间
-    beta = random.randint(-100, -50)  # 对比度控制在 -100 到 -50 之间
+    # alpha = random.uniform(0.5, 0.8)  # 亮度控制在 0.5 到 0.8 之间
+    alpha = random.uniform(0.25, 0.50)  # 亮度控制在 0.25 到 0.50 之间, 对应曝光系数EV -1~-2
+    # beta = random.randint(-100, -50)  # 对比度控制在 -100 到 -50 之间
+    beta = 0
     underexposed_img = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
     return underexposed_img
 
@@ -68,6 +72,6 @@ if __name__ == "__main__":
 
 
 # # 使用示例
-# input_folder = '/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/sequences/04/image_2'  # 输入文件夹路径
-# output_folder = '/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/over_expose/04/image_2'  # 输出文件夹路径
-# process_images(input_folder, output_folder)
+# input_folder = '/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/sequences/03/image_2'  # 输入文件夹路径
+# output_folder = '/workspace/mnt/storage/shihao/EventSSC/SemanticKITTI/kitti/dataset/over_expose/03/image_2'  # 输出文件夹路径
+# process_images(input_folder, output_folder, exposure_type='over')
